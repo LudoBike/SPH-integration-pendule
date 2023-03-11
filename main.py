@@ -1,8 +1,21 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import os
 import values as v
 from numerical_scheme import simplectic_scheme, explicit_scheme, implicit_scheme
 
+
+# ------------------------------------------------------------
+#   Figures parameters
+# ------------------------------------------------------------
+figure_path = "figures/"  # Path where to save figures
+figure_dpi = 100
+figure_format = "png"
+
+try:
+    os.mkdir(figure_path)
+except FileExistsError:
+    pass
 
 # ------------------------------------------------------------
 #   1. Phase diagram
@@ -36,4 +49,4 @@ plt.plot(
 plt.xlabel(r"$\theta(t)$")
 plt.ylabel(r"$\dot{\theta}(t)$")
 plt.legend()
-plt.show()
+plt.savefig(figure_path + "diagrame_phase", dpi=figure_dpi, format=figure_format)
