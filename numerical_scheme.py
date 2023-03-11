@@ -1,7 +1,5 @@
 import numpy as np
 
-import values
-
 
 def simplectic_scheme(theta0, theta_dot0, omega0, dt, N):
     """
@@ -14,7 +12,7 @@ def simplectic_scheme(theta0, theta_dot0, omega0, dt, N):
     theta[0] = theta0
     theta_dot[0] = theta_dot0
 
-    for i in range(N - 1):
+    for i in range(N):
         theta_dot[i + 1] = theta_dot[i] - omega0**2 * theta[i] * dt
         theta[i + 1] = theta[i] + theta_dot[i + 1] * dt
 
@@ -45,7 +43,7 @@ def implicit_scheme(theta0, theta_dot0, omega0, dt, N):
     theta_dot = theta_dot0 * np.ones(N + 1)
 
     for n in range(N):
-        theta_dot[n + 1] = (theta_dot(n) - omega0**2 * theta[n] * dt) / (
+        theta_dot[n + 1] = (theta_dot[n] - omega0**2 * theta[n] * dt) / (
             1 + (omega0 * dt) ** 2
         )
         theta[n + 1] = (theta[n] + theta_dot[n] * dt) / (1 + (omega0 * dt) ** 2)
