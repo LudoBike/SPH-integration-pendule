@@ -21,7 +21,7 @@ except FileExistsError:
 # ------------------------------------------------------------
 #   1. Phase diagram
 # ------------------------------------------------------------
-dt = v.T0 / 50  # Timestep [s]
+dt = v.T0 / 100  # Timestep [s]
 N = int(np.ceil(3 * v.T0 / dt))  # Number of iteration, we want to compute 3 periods
 timerange = np.linspace(0, N * dt, N + 1)
 
