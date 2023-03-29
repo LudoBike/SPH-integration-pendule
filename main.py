@@ -81,3 +81,49 @@ plt.ylabel("Hamiltonien $H(t)$ (J)")
 plt.legend()
 plt.savefig(figure_path + "hamiltonien", dpi=figure_dpi, format=figure_format)
 plt.clf()
+
+
+# ------------------------------------------------------------
+#   3. Error estimation
+# ------------------------------------------------------------
+def error_L2_norm(num_theta, num_theta_dot, theo_theta, theo_theta_dot):
+    """
+    Compute the numerical error with the L2 norm
+    num_theta and num_theta_dot are the numerical results
+    theo_theta and theo_theta_dot are the analytical results
+    """
+    N = len(num_theta)  # Number of iterations
+    error = np.sum(
+        ((num_theta - theo_theta) / v.theta0) ** 2
+        + ((num_theta_dot - theo_theta_dot) / (v.omega0 * v.theta0)) ** 2
+    )
+    error = np.sqrt(error / N)
+    return error
+
+
+dt_range = v.T0 / np.array([10000, 5000, 1000, 500, 100, 50, 10])
+errors = np.zeros_like(dt_range)
+for i in range(len(dt_range)):
+    dt = dt_range[i]
+    N = int(np.ceil(5 * v.T0 / dt))  # Number of iteration, we want to compute 5 periods
+    timerange = np.linspace(0, N * dt, N + 1)
+
+    # Theorical solution
+    phi = np.arcsin(-v.theta_dot0 / (v.theta0 * v.omega0))
+    theo_theta = v.theta0 * np.cos(v.omega0 * timerange + phi)
+    theo_theta_dot = -v.omega0 * v.theta0 * np.sin(v.omega0 * timerange + phi)
+
+    # Numerical solution with simplectic scheme
+    (simp_theta, simp_theta_dot) = simplectic_scheme(
+        v.theta0, v.theta_dot0, v.omega0, dt, N
+    )
+
+    errors[i] = error_L2_norm(simp_theta, simp_theta_dot, theo_theta, theo_theta_dot)
+
+# Figure plot
+plt.plot(dt_range / v.T0, errors)
+plt.loglog()
+plt.xlabel(r"$dt/T0$")
+plt.ylabel(r"$E_{\delta t}$")
+plt.savefig(figure_path + "erreur", dpi=figure_dpi, format=figure_format)
+plt.clf()
