@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy import stats
 import os
 import values as v
 from numerical_scheme import simplectic_scheme, explicit_scheme, implicit_scheme
@@ -9,7 +10,7 @@ from numerical_scheme import simplectic_scheme, explicit_scheme, implicit_scheme
 #   Figures parameters
 # ------------------------------------------------------------
 figure_path = "figures/"  # Path where to save figures
-figure_dpi = 100
+figure_dpi = 400
 figure_format = "png"
 
 try:
@@ -101,7 +102,26 @@ def error_L2_norm(num_theta, num_theta_dot, theo_theta, theo_theta_dot):
     return error
 
 
-dt_range = v.T0 / np.array([10000, 5000, 1000, 500, 100, 50, 10])
+dt_range = v.T0 / np.array(
+    [
+        1000000,
+        300000,
+        100000,
+        30000,
+        10000,
+        3000,
+        1000,
+        300,
+        100,
+        50,
+        30,
+        20,
+        15,
+        13,
+        11,
+        10,
+    ]
+)
 errors = np.zeros_like(dt_range)
 for i in range(len(dt_range)):
     dt = dt_range[i]
@@ -120,10 +140,24 @@ for i in range(len(dt_range)):
 
     errors[i] = error_L2_norm(simp_theta, simp_theta_dot, theo_theta, theo_theta_dot)
 
+# Linear regression
+slope, intercept, r_value, p_value, std_err = stats.linregress(
+    np.log10(dt_range[:8] / v.T0), np.log10(errors[:8])
+)
+print("Pente de la régression :", slope)
+print("R^2 :", r_value**2)
+
+
 # Figure plot
-plt.plot(dt_range / v.T0, errors)
+X = np.linspace(1e-6, 1e-2, 10)
+Y = (10**intercept) * (X**slope)
+
+plt.text(1e-3, 6e-4, r"$\propto \frac{dt}{T_0}$", color="dimgray", fontsize=20)
+
+plt.plot(dt_range / v.T0, errors, color="orange")  # Results
+plt.plot(X, Y, "-", color="dimgray", alpha=0.5, linewidth=4)  # Linear regression
 plt.loglog()
-plt.xlabel(r"$dt/T0$")
+plt.xlabel(r"$dt/T_0$")
 plt.ylabel(r"$E_{\delta t}$")
 plt.savefig(figure_path + "erreur", dpi=figure_dpi, format=figure_format)
 plt.clf()
