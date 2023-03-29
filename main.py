@@ -37,18 +37,33 @@ theo_theta_dot = -v.omega0 * v.theta0 * np.sin(v.omega0 * timerange + phi)
 (expl_theta, expl_theta_dot) = explicit_scheme(v.theta0, v.theta_dot0, v.omega0, dt, N)
 (impl_theta, impl_theta_dot) = implicit_scheme(v.theta0, v.theta_dot0, v.omega0, dt, N)
 
-plt.plot(simp_theta, simp_theta_dot, color="red", label="Schéma simplectique")
-plt.plot(expl_theta, expl_theta_dot, color="blue", label="Schéma explicite")
-plt.plot(impl_theta, impl_theta_dot, color="green", label="Schéma implicite")
 plt.plot(
-    theo_theta,
-    theo_theta_dot,
+    simp_theta / v.theta0,
+    simp_theta_dot / (v.omega0 * v.theta0),
+    color="red",
+    label="Schéma simplectique",
+)
+plt.plot(
+    expl_theta / v.theta0,
+    expl_theta_dot / (v.omega0 * v.theta0),
+    color="blue",
+    label="Schéma explicite",
+)
+plt.plot(
+    impl_theta / v.theta0,
+    impl_theta_dot / (v.omega0 * v.theta0),
+    color="green",
+    label="Schéma implicite",
+)
+plt.plot(
+    theo_theta / v.theta0,
+    theo_theta_dot / (v.omega0 * v.theta0),
     color="black",
-    linestyle=(0, (5, 5)),
+    linestyle=(0, (3, 3)),
     label="Résultat théorique",
 )
-plt.xlabel(r"$\theta(t)$")
-plt.ylabel(r"$\dot{\theta}(t)$")
+plt.xlabel(r"$\theta(t)/\theta_0$")
+plt.ylabel(r"$\dot{\theta}(t)/\omega_0\theta_0$")
 plt.legend()
 plt.savefig(figure_path + "diagrame_phase", dpi=figure_dpi, format=figure_format)
 plt.clf()
@@ -67,18 +82,34 @@ simp_hamiltonian = hamiltonian(simp_theta, simp_theta_dot)
 expl_hamiltonian = hamiltonian(expl_theta, expl_theta_dot)
 impl_hamiltonian = hamiltonian(impl_theta, impl_theta_dot)
 
+H_0 = theo_hamiltonian[0]
 plt.plot(
-    timerange,
-    theo_hamiltonian,
+    timerange / v.T0,
+    theo_hamiltonian / H_0,
     color="black",
     linestyle=(0, (5, 5)),
     label="Résultat théorique",
 )
-plt.plot(timerange, simp_hamiltonian, color="red", label="Schéma simplectique")
-plt.plot(timerange, expl_hamiltonian, color="blue", label="Schéma explicite")
-plt.plot(timerange, impl_hamiltonian, color="green", label="Schéma implicite")
-plt.xlabel("Temps $t$ (s)")
-plt.ylabel("Hamiltonien $H(t)$ (J)")
+plt.plot(
+    timerange / v.T0,
+    simp_hamiltonian / H_0,
+    color="red",
+    label="Schéma simplectique",
+)
+plt.plot(
+    timerange / v.T0,
+    expl_hamiltonian / H_0,
+    color="blue",
+    label="Schéma explicite",
+)
+plt.plot(
+    timerange / v.T0,
+    impl_hamiltonian / H_0,
+    color="green",
+    label="Schéma implicite",
+)
+plt.xlabel("Temps $t/T_0$")
+plt.ylabel("Hamiltonien $H(t)/H(0)$")
 plt.legend()
 plt.savefig(figure_path + "hamiltonien", dpi=figure_dpi, format=figure_format)
 plt.clf()
